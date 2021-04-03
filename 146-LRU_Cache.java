@@ -1,82 +1,75 @@
 class LRUCache {
-    class DLinkedNode {
-        int key;
-        int value;
-        DLinkedNode pre;
-        DLinkedNode next;
+    class Node {
+        int key, value;
+        Node prev, next;
+        public Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
     }
-    private Map<Integer, DLinkedNode> cache = new HashMap<>();
-    private int count;
-    private int capacity;
-    private DLinkedNode head, tail;
+
+    private Map<Integer, Node> cache = new HashMap();
+    int size, capacity;
+    Node head, tail;
 
     public LRUCache(int capacity) {
-        this.count = 0;
-        this.capacity = capacity;
-
-        head = new DLinkedNode();
-        head.pre = null;
-
-        tail = new DLinkedNode();
-        tail.next = null;
-
+        head = new Node(0,0);
+        tail = new Node(0,0);
         head.next = tail;
-        tail.pre = head;
+        tail.prev = head;
+        this.capacity = capacity;
+        size = 0;
+    }
+
+    public void addHead(Node node) {
+        Node nextNode = head.next;
+        node.prev = head;
+        node.next = nextNode;
+        head.next = node;
+        nextNode.prev = node;
+    }
+
+    public void remove(Node node) {
+        Node prevNode = node.prev;
+        Node nextNode = node.next;
+        prevNode.next = nextNode;
+        nextNode.prev = prevNode;
+    }
+
+    public void removeTail() {
+        Node prevTail = tail.prev;
+        remove(prevTail);
+        cache.remove(prevTail.key);
     }
 
     public int get(int key) {
-        DLinkedNode node = cache.get(key);
-        if (null == node)  {
-            return -1;
+        if (cache.containsKey(key)) {
+            Node node = cache.get(key);
+            remove(node);
+            addHead(node);
+            return cache.get(key).value;
         }
-        moveToHead(node);
-        return node.value;
+        return -1;
     }
 
     public void put(int key, int value) {
-        DLinkedNode node = cache.get(key);
-        if (null == node) {
-            DLinkedNode newNode = new DLinkedNode();
-            newNode.key = key;
-            newNode.value = value;
-
-            cache.put(key, newNode);
-            addNode(newNode);
-            ++count;
-            if (count > capacity) {
-                DLinkedNode lastNode = popLastNode();
-                cache.remove(lastNode.key);
-                --count;
-            }
-        }else {
-            node.value = value;
-            moveToHead(node);
+        if (capacity == 0) {
+            return;
         }
-    }
+        if (cache.containsKey(key)) {
+            cache.get(key).value = value;
+            get(key);
+        } else {
+            Node newNode = new Node(key, value);
+            addHead(newNode);
+            size++;
 
-    private DLinkedNode popLastNode() {
-        DLinkedNode lastNode = tail.pre;
-        removeNode(lastNode);
-        return lastNode;
-    }
-
-    private void moveToHead(DLinkedNode node) {
-        removeNode(node);
-        addNode(node);
-    }
-
-    private void addNode(DLinkedNode node) {
-        node.pre = head;
-        node.next = head.next;
-        head.next.pre = node;
-        head.next = node;
-    }
-
-    private void removeNode(DLinkedNode node) {
-        DLinkedNode pre = node.pre;
-        DLinkedNode next = node.next;
-        pre.next = next;
-        next.pre = pre;
+            if (size > capacity) {
+                removeTail();
+                size--;
+            }
+            cache.put(key, newNode);
+        }
     }
 }
 
