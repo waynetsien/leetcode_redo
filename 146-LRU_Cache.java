@@ -47,7 +47,7 @@ class LRUCache {
             Node node = cache.get(key);
             remove(node);
             addHead(node);
-            return cache.get(key).value;
+            return node.value;
         }
         return -1;
     }
