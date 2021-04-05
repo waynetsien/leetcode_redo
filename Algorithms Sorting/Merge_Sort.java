@@ -1,7 +1,6 @@
 public class MergeSort {
 
     public static void main(String[] args) {
-        // 待测试的排序数组
         int[] arr = {5,1,13,19,3,9,12,14,17};
         mergeSort(arr,0,arr.length-1);
         for(int i=0;i<arr.length;i++){
