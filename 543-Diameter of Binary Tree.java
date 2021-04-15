@@ -15,7 +15,7 @@ class Solution {
         int right = dfs(root.right);
 
         diameter = Math.max(diameter, left + right);
-        // 返回某节点的左右两边最长的长度，并向上递归返回 +1
+        // 返回某节点的左右两子树最长的长度，并向上递归返回 +1
         return Math.max(left, right) + 1;
     }
 }
