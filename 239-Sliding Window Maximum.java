@@ -12,7 +12,7 @@ class Solution {
 
         res[index++] = deque.peekFirst();
 
-        for (int i = k; i < nums.length; i++) {
+        for (int i = k; i < n; i++) {
             if (deque.peekFirst() == nums[i - k]) {
                 deque.pollFirst();
             }
